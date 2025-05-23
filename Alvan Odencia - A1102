@@ -1,0 +1,181 @@
+import java.util.Scanner;
+
+public class AppImplementation {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to MotorPH App Portal");
+        System.out.println("Choose what you want to do with the portal: ");
+        System.out.println("(1)Employee Details");
+        System.out.println("(2)Motorcycle Inventory");
+        System.out.print("Input your choice here: ");
+
+        int option = scanner.nextInt();
+        scanner.nextLine();
+
+        if (option == 1) {
+            System.out.print("Employee ID: ");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            System.out.print("Employee#: ");
+            String empNum = scanner.nextLine();
+
+            System.out.print("Full Name: ");
+            String name = scanner.nextLine();
+
+            System.out.print("Birth Date (yyyy-mm-dd): ");
+            String birth = scanner.nextLine();
+
+            System.out.print("Hire Date (yyyy-mm-dd): ");
+            String hire = scanner.nextLine();
+
+            System.out.print("Job Position: ");
+            String position = scanner.nextLine();
+
+            Employee employee = new Employee(id, empNum, name, birth, hire, position);
+
+            PayrollOfficer payroll = new PayrollOfficer();
+            payroll.computeGrossSalary(employee);
+            payroll.computeNetSalary(employee);
+
+            Portal portal = new Portal();
+            portal.showEmployee(employee);
+
+        } else if (option == 2) {
+            InventoryManager inventory = new InventoryManager();
+
+            System.out.print("How many motorcycles to input? ");
+            int count = scanner.nextInt();
+            scanner.nextLine();
+
+            for (int i = 0; i < count; i++) {
+                
+                System.out.print("Motorcycle Brand: ");
+                String brand = scanner.nextLine();
+
+                System.out.print("Motorcycle Model: ");
+                String model = scanner.nextLine();
+
+                System.out.print("Motorcycle Price: ");
+                double price = scanner.nextDouble();
+
+                System.out.print("Stock: ");
+                int stock = scanner.nextInt();
+                scanner.nextLine();
+
+                Motorcycle moto = new Motorcycle(brand, model, price, stock);
+                inventory.addMotorcycle(moto);
+            }
+
+            Portal portal = new Portal();
+            portal.showMotorcycles(inventory);
+        } else {
+            System.out.println("Invalid choice. Exiting app.");
+        }
+
+        scanner.close();
+    }
+}
+
+class Employee {
+    private int id;
+    private String employeeNumber;
+    private String name;
+    private String birthDate;
+    private String hireDate;
+    private String position;
+    private double grossSalary;
+    private double netSalary;
+
+    public Employee(int id, String empNum, String name, String birth, String hire, String position) {
+        this.id = id;
+        this.employeeNumber = empNum;
+        this.name = name;
+        this.birthDate = birth;
+        this.hireDate = hire;
+        this.position = position;
+    }
+
+    public void setGrossSalary(double salary) {
+        this.grossSalary = salary;
+    }
+
+    public void setNetSalary(double salary) {
+        this.netSalary = salary;
+    }
+
+    public double getGrossSalary() {
+        return grossSalary;
+    }
+
+    public String getInfo() {
+        return "ID: " + id +
+               "\nName: " + name +
+               "\nPosition: " + position +
+               "\nGross Salary: " + grossSalary +
+               "\nNet Salary: " + netSalary;
+    }
+}
+
+class PayrollOfficer {
+    public void computeGrossSalary(Employee e) {
+        e.setGrossSalary(40 * 500);
+    }
+
+    public void computeNetSalary(Employee e) {
+        e.setNetSalary(e.getGrossSalary() * 0.8);
+    }
+}
+
+class InventoryManager {
+    private Motorcycle[] motorcycles = new Motorcycle[100];
+    private int index = 0;
+
+    public void addMotorcycle(Motorcycle m) {
+        if (index < motorcycles.length) {
+            motorcycles[index++] = m;
+        }
+    }
+
+    public Motorcycle[] getInventory() {
+        return motorcycles;
+    }
+
+    public int getTotal() {
+        return index;
+    }
+}
+
+class Motorcycle {
+    private String brand;
+    private String model;
+    private double price;
+    private int stock;
+
+    public Motorcycle(String brand, String model, double price, int stock) {
+        this.brand = brand;
+        this.model = model;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    public String getInfo() {
+        return brand + " " + model + ", Price: " + price + ", Stock: " + stock;
+    }
+}
+
+class Portal {
+    public void showEmployee(Employee e) {
+        System.out.println("\n[Employee Details]");
+        System.out.println(e.getInfo());
+    }
+
+    public void showMotorcycles(InventoryManager im) {
+        System.out.println("\n[Motorcycle List]");
+        for (int i = 0; i < im.getTotal(); i++) {
+            System.out.println((i + 1) + ". " + im.getInventory()[i].getInfo());
+        }
+    }
+}
