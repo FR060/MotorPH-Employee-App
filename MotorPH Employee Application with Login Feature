@@ -1,0 +1,198 @@
+package com.mycompany.terminalassessment;
+
+/**
+ *
+ * Milestone 2 – with Login feature
+ */
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class TerminalAssessment {
+
+    static Scanner scanner = new Scanner(System.in);
+    static ArrayList<Employee> employees = new ArrayList<>();
+
+    public static void main(String[] args) {
+
+        // Simple login
+        if (!login()) {
+            System.out.println("Too many failed attempts. Exiting program.");
+            return;
+        }
+
+        boolean running = true;
+
+        while (running) {
+            System.out.println("\n--- MotorPH Management Portal ---");
+            System.out.println("1. Add New Employee");
+            System.out.println("2. Update Employee");
+            System.out.println("3. Delete Employee");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option *Input Number only: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (choice == 1) {
+                addEmployee();
+            } else if (choice == 2) {
+                updateEmployee();
+            } else if (choice == 3) {
+                deleteEmployee();
+            } else if (choice == 4) {
+                running = false;
+                System.out.println("Thank you for using MotorPH Portal");
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    public static boolean login() {
+        String correctUsername = "AlvanO";
+        String correctPassword = "2024171158";
+        int attempts = 0;
+
+        System.out.println("--- MotorPH Login ---");
+
+        while (attempts < 3) {
+            System.out.print("Username: ");
+            String username = scanner.nextLine();
+
+            System.out.print("Password: ");
+            String password = scanner.nextLine();
+
+            if (username.equals(correctUsername) && password.equals(correctPassword)) {
+                System.out.println("Login successful. Welcome, " + username + "!");
+                return true;
+            } else {
+                attempts++;
+                System.out.println("Incorrect username or password. (" + (3 - attempts) + " attempts left)");
+            }
+        }
+        return false;
+    }
+
+    public static void addEmployee() {
+        System.out.println("\n[Add Employee]");
+        System.out.print("New Employee ID: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("New Employee Number: ");
+        String empNum = scanner.nextLine();
+        System.out.print("Full Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Birth Date (yyyy-mm-dd): ");
+        String birthDate = scanner.nextLine();
+        System.out.print("Hire Date (yyyy-mm-dd): ");
+        String hireDate = scanner.nextLine();
+        System.out.print("Job Position: ");
+        String position = scanner.nextLine();
+
+        Employee emp = new Employee(id, empNum, name, birthDate, hireDate, position);
+        PayrollOfficer payroll = new PayrollOfficer();
+        payroll.computeGrossSalary(emp);
+        payroll.computeNetSalary(emp);
+        employees.add(emp);
+        System.out.println("New Employee Added!.");
+    }
+
+    public static void updateEmployee() {
+        System.out.println("\n[Update Employee]");
+        System.out.print("Enter ID to update: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Employee emp = findEmployeeById(id);
+        if (emp != null) {
+            System.out.print("New Name (leave blank to keep): ");
+            String name = scanner.nextLine();
+            if (!name.isEmpty()) emp.setName(name);
+
+            System.out.print("New Employee Position (leave blank to keep): ");
+            String position = scanner.nextLine();
+            if (!position.isEmpty()) emp.setPosition(position);
+
+            System.out.println("Employee's Information Updated.");
+        } else {
+            System.out.println("Employee not found.");
+        }
+    }
+
+    public static void deleteEmployee() {
+        System.out.println("\n[Delete Employee]");
+        System.out.print("Enter ID to delete: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Employee emp = findEmployeeById(id);
+        if (emp != null) {
+            employees.remove(emp);
+            System.out.println("Employee deleted.");
+        } else {
+            System.out.println("Employee not found.");
+        }
+    }
+
+    public static Employee findEmployeeById(int id) {
+        for (Employee emp : employees) {
+            if (emp.getId() == id) {
+                return emp;
+            }
+        }
+        return null;
+    }
+}
+
+class Employee {
+    private int id;
+    private String empNum;
+    private String name;
+    private String birthDate;
+    private String hireDate;
+    private String position;
+    private double grossSalary;
+    private double netSalary;
+
+    public Employee(int id, String empNum, String name, String birthDate, String hireDate, String position) {
+        this.id = id;
+        this.empNum = empNum;
+        this.name = name;
+        this.birthDate = birthDate;
+        this.hireDate = hireDate;
+        this.position = position;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public void setGrossSalary(double salary) {
+        this.grossSalary = salary;
+    }
+
+    public void setNetSalary(double salary) {
+        this.netSalary = salary;
+    }
+
+    public double getGrossSalary() {
+        return grossSalary;
+    }
+}
+
+class PayrollOfficer {
+    public void computeGrossSalary(Employee emp) {
+        emp.setGrossSalary(40 * 500); // simple computation
+    }
+
+    public void computeNetSalary(Employee emp) {
+        emp.setNetSalary(emp.getGrossSalary() * 0.8); // 20% deduction
+    }
+}
